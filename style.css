@@ -1,0 +1,74 @@
+body {
+	padding: 10px;
+}
+
+	body>.wrapper {
+		background-color: #DDD;
+		margin: auto;
+		width: 100%;
+	}
+
+.field {
+	width: 600px;
+	height: 600px;
+	margin: auto;
+	border: 2px solid #000;
+	position: relative;
+}
+	.field .cell, .field .squirrel, .field .squirrel>.block {
+		position: absolute;
+		box-sizing: border-box;
+	}
+	.field .cell {
+		border: 1px solid #666;
+	}
+	.field .squirrel {
+		background-color: yellow;
+	}
+	.field .squirrel>.block {
+		z-index: 3;
+		border: 2px solid #000;
+	}
+.empty {
+	border: 2px solid #000;
+}
+.withoutBottom {
+	border-bottom: 0 !important;
+}
+.withoutTop {
+	border-top: 0 !important;
+}
+.withoutLeft {
+	border-left: 0 !important;
+}
+.withoutRight {
+	border-right: 0 !important;
+}
+.arrow {
+	margin: auto;
+	border-radius: 50%;
+	border: 1px solid #000;
+	z-index: 5;
+	position: absolute;
+	box-sizing: border-box;
+	background-image: url("img/arrow.jpg");
+	background-size: 100%;
+	cursor: pointer;
+}
+.arrowTop {
+	top: 3px;
+	transform: rotate(90deg);
+}
+.arrowBottom {
+	transform: rotate(270deg);
+}
+.arrowLeft {
+	left: 3px;
+}
+.arrowRight {
+	transform: rotate(180deg);
+}
+.deactivate {
+	opacity: 0.4;
+	cursor: default;
+}
