@@ -65,22 +65,26 @@ class Squirrel {
 	canBottom() {
 		return this._canMoveToCoords(this.getBottomCoords());
 	}
-	_move(can, move) {
+	_move(can, move, callback) {
 		if (can) {
 			this.coords = move(this.coords);
 			this.field.resolveSquirrelsSpace();
 		}
+		Logger.log(this.field.toString());
+		if (typeof callback !== 'undefined') {
+			callback();
+		}
 	}
-	top() {
-		this._move(this.canTop(), moveTypes.top);
+	top(callback) {
+		this._move(this.canTop(), moveTypes.top, callback);
 	}
-	bottom() {
-		this._move(this.canBottom(), moveTypes.bottom);
+	bottom(callback) {
+		this._move(this.canBottom(), moveTypes.bottom, callback);
 	}
-	left() {
-		this._move(this.canLeft(), moveTypes.left);
+	left(callback) {
+		this._move(this.canLeft(), moveTypes.left, callback);
 	}
-	right() {
-		this._move(this.canRight(), moveTypes.right);
+	right(callback) {
+		this._move(this.canRight(), moveTypes.right, callback);
 	}
 }

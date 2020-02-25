@@ -1,12 +1,17 @@
 class FieldGUI {
 	constructor(wrapped, parent) {
-		this.wrapped = wrapped;
-		this.jQ = $('<div class="field"></div>');
+		/*
+			Конструктор графического элемента поля
+		*/
+		this.wrapped = wrapped;						//обёрнуты элемент поля игры
+		this.jQ = $('<div class="field"></div>');	//jQ-элемент поля игры
+		//попытка внесения jQ элемента поля на HTML-страницу
 		try {
 			parent.append(this.jQ);
 		} catch(err) {
 			throw 'Error in trying create';
 		}
+		//рисуем сетку
 		for (let i = 0;i < this.wrapped.getHeight();i++) {
 			for (let j = 0;j < this.wrapped.getWidth();j++) {
 				const coordsOfTheGrid = this.coordsOfTheGrid([j, i]);
@@ -14,12 +19,14 @@ class FieldGUI {
 				coordsOfTheGrid.bottom += 'px';
 				coordsOfTheGrid.left += 'px';
 				coordsOfTheGrid.right += 'px';
-				//создаём сетку
+				//вносим сетку на поле сетку
 				this.jQ.append($('<div class="cell"></div>').css(coordsOfTheGrid));
 			}
 		}
+		this._squirrels = [];			//массив графических элементов белок
+		//размещаем белок в поле
 		this.wrapped._squirrels.forEach(sq => {
-			new SquirrelGUI(sq, this);
+			this._squirrels.push(new SquirrelGUI(sq, this));
 		});
 	}
 
@@ -37,10 +44,13 @@ class FieldGUI {
 		};
 	}
 
-	/*checkAllSquirrels() {			
-		
-		this._squirrels.forEach(function(el){
-			el.jQpossibilityCheck();
+	checkAllSquirrelsPossibleDirections() {
+		/*
+			Для всех графических элементов - белок на поле проверяем возможность
+			движения в ту или иную сторону, в зависимости от текущей конфигурации поля
+		*/
+		this._squirrels.forEach(sq => {
+			sq.checkPossibleDirectionOfMove();
 		});
-	}*/
+	}
 }

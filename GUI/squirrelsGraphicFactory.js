@@ -1,5 +1,8 @@
 const squirrelsGraphicFactory = new (function(){
 	function stylesOfSquirrelsBlocks(width, height, color) {
+		/*
+			стили конкретного блока и стрелки
+		*/
 		return {
 			style: {
 				width: width + 'px',
@@ -13,12 +16,20 @@ const squirrelsGraphicFactory = new (function(){
 		}
 	}
 	function createBlocks(block, width, height, color) {
+		/*
+			Элемент белки состоит из блока на поле, здесь задаём создаём массив блоков на основе
+			переданного массива классов блока и его положения
+		*/
 		const style = stylesOfSquirrelsBlocks(width, height, color).style;
 		return block.map(classes => {
 			return  $('<div class="block ' + classes.reduce((style, cssClass) => style + ' ' + cssClass) + '"></div>').css(style);
 		});
 	}
 	function createArrows(width, height, color, styles) {
+		/*
+			Элемент белки содержит четыре стрелки. Здесь мы создаём эти стрелки на основе их положения 
+			на основном элементе белки
+		*/
 		const arrowStyle = stylesOfSquirrelsBlocks(width, height, color).arrowStyle;
 		return {
 			top: $('<div class="arrow arrowTop deactivate"></div>').css(arrowStyle).css(typeof styles.top === 'undefined' ? {} : styles.top),
@@ -28,6 +39,10 @@ const squirrelsGraphicFactory = new (function(){
 		}
 	}
 	function createSquirrel(blocks, arrows) {
+		/*
+			Функция создания конкретного графического элемента белки на основе элементов блоков
+			её составляющий и стрелок с заданными стилями и положениями. Это простой сборщик
+		*/
 		const parent = $('<div class="squirrel"></div>');
 		blocks.forEach(block => {
 			parent.append(block);
@@ -37,6 +52,7 @@ const squirrelsGraphicFactory = new (function(){
 		}
 		return parent;
 	}
+	//типовые функции создания конкретных типов белок
 	this.line2height = function(width, height, color) {
 		const blocks = createBlocks([['withoutBottom'], ['withoutTop']], width, height, color);
 		blocks[1].css({
