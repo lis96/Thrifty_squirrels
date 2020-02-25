@@ -56,14 +56,10 @@ body {
 	cursor: pointer;
 }
 .arrowTop {
-	top: 3px;
 	transform: rotate(90deg);
 }
 .arrowBottom {
 	transform: rotate(270deg);
-}
-.arrowLeft {
-	left: 3px;
 }
 .arrowRight {
 	transform: rotate(180deg);

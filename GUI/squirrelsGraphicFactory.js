@@ -15,143 +15,227 @@ const squirrelsGraphicFactory = new (function(){
 			}
 		}
 	}
-	function createBlocks(block, width, height, color) {
+	
+	const BlockTypes = {
 		/*
-			Элемент белки состоит из блока на поле, здесь задаём создаём массив блоков на основе
-			переданного массива классов блока и его положения
+			Здесь заданы варианты блоков, из которых собираются белки:
+				CCSclasses - в зависимости от набора остальных блоков, данные классы будут
+					включены в классы конкретного блока
+				position - позиционирование конкретного блока
 		*/
-		const style = stylesOfSquirrelsBlocks(width, height, color).style;
-		return block.map(classes => {
-			return  $('<div class="block ' + classes.reduce((style, cssClass) => style + ' ' + cssClass) + '"></div>').css(style);
-		});
-	}
-	function createArrows(width, height, color, styles) {
-		/*
-			Элемент белки содержит четыре стрелки. Здесь мы создаём эти стрелки на основе их положения 
-			на основном элементе белки
-		*/
-		const arrowStyle = stylesOfSquirrelsBlocks(width, height, color).arrowStyle;
-		return {
-			top: $('<div class="arrow arrowTop deactivate"></div>').css(arrowStyle).css(typeof styles.top === 'undefined' ? {} : styles.top),
-			bottom: $('<div class="arrow arrowBottom deactivate"></div>').css(arrowStyle).css(typeof styles.bottom === 'undefined' ? {} : styles.bottom),
-			left: $('<div class="arrow arrowLeft deactivate"></div>').css(arrowStyle).css(typeof styles.left === 'undefined' ? {} : styles.left),
-			right: $('<div class="arrow arrowRight deactivate"></div>').css(arrowStyle).css(typeof styles.right === 'undefined' ? {} : styles.right)
+		topLeft: {
+			CSSclasses: {
+				'topRight': 'withoutRight',
+				'bottomLeft': 'withoutBottom'
+			},
+			position: (style) => {
+				return {}
+			}
+		},
+		topRight: {
+			CSSclasses: {
+				'topLeft': 'withoutLeft',
+				'bottomRight': 'withoutBottom'
+			},
+			position: (style) => {
+				return {
+					left: style.width
+				}
+			}
+		},
+		bottomLeft: {
+			CSSclasses: {
+				'topLeft': 'withoutTop',
+				'bottomRight': 'withoutRight'
+			},
+			position: (style) => {
+				return {
+					top: style.height
+				}
+			}
+		},
+		bottomRight: {
+			CSSclasses: {
+				'topRight': 'withoutTop',
+				'bottomLeft': 'withoutLeft'
+			},
+			position: (style) => {
+				return {
+					left: style.width,
+					top: style.height
+				}
+			}
 		}
 	}
-	function createSquirrel(blocks, arrows) {
+	
+	function centralizationPosition (blockWidth, arrowWidth, lineIndex) {
+		/*
+			расположение стрелочки ровно по центру границы белки
+				lineIndex определяет характер границы, составленный блоками
+		*/
+		blockWidth = Number(blockWidth.slice(0, -2));
+		arrowWidth = Number(arrowWidth.slice(0, -2));
+		if (lineIndex === 1) {
+			return ((blockWidth - arrowWidth) / 2) + 'px';
+		} else if (lineIndex === 2) {
+			return (blockWidth + (blockWidth - arrowWidth) / 2) + 'px';
+		} else if (lineIndex === 3) {
+			return (blockWidth - arrowWidth / 2) + 'px';
+		} else {
+			throw 'Wrong index of blocks type';
+		}
+	}
+
+	function SolvePosition(blocksPosition) {
+		/*
+			Функция, возвращающая на основе функции централизации по границе общего вида, функцию,
+				проводящую конкретную централизацию конкретной стрелочки для конкретного вида белки
+		*/
+		return (blockWidth, arrowWidth, blocks) => {
+			if (blocks.indexOf(blocksPosition[0]) !== -1 || blocks.indexOf(blocksPosition[1]) !== -1) {
+				return centralizationPosition(blockWidth, arrowWidth,
+					(blocks.indexOf(blocksPosition[0]) !== -1 ? 1 : 0) + (blocks.indexOf(blocksPosition[1]) !== -1 ? 2 : 0)
+				);
+			} else {
+				return centralizationPosition(blockWidth, arrowWidth,
+					(blocks.indexOf(blocksPosition[2]) !== -1 ? 1 : 0) + (blocks.indexOf(blocksPosition[3]) !== -1 ? 2 : 0)
+				);
+			}
+		}
+	}
+
+	function toBorderPosition(blocksPosition) {
+		/*
+			Функция позиционирования стрелочки точно у границы конкретной белки (паз 3 пикселя
+				до границы)
+		*/
+		return (blockWidth, arrowWidth, blocks) => {
+			arrowHeight = Number(arrowWidth.slice(0, -2));
+			blockHeight = Number(blockWidth.slice(0, -2));
+			return (blockHeight - arrowHeight - 3 + 
+				(blocks.indexOf(blocksPosition[0]) !== -1 || blocks.indexOf(blocksPosition[1]) !== -1 ? blockHeight : 0)) + 'px';
+		}
+	}
+
+	const arrowTypes = {
+		/*
+			Это объект, который характеоризует конкретные типы стрелочек
+				CSSclass - класс стрелочки
+				position - позиционирование стрелочки
+		*/
+		top: {
+			CSSclass: 'arrowTop',
+			position: (styles, blocks) => {
+				return {
+					left: SolvePosition(['topLeft', 'topRight', 'bottomLeft', 'bottomRight'])(styles.style.width, styles.arrowStyle.width, blocks),
+					top: '3px'
+				};
+			}
+		},
+		bottom: {
+			CSSclass: 'arrowBottom',
+			position: (styles, blocks) => {
+				return {
+					left: SolvePosition(['bottomLeft', 'bottomRight', 'topLeft', 'topRight'])(styles.style.width, styles.arrowStyle.width, blocks),
+					top: toBorderPosition(['bottomLeft', 'bottomRight'])(styles.style.width, styles.arrowStyle.width, blocks)
+				};
+			}
+		},
+		left: {
+			CSSclass: 'arrowLeft',
+			position: (styles, blocks) => {
+				return {
+					top: SolvePosition(['topLeft', 'bottomLeft', 'topRight', 'bottomRight'])(styles.style.height, styles.arrowStyle.height, blocks),
+					left: '3px'
+				};
+			}
+		},
+		right: {
+			CSSclass: 'arrowRight',
+			position: (styles, blocks) => {
+				return {
+					top: SolvePosition(['topRight', 'bottomRight', 'topLeft', 'bottomLeft'])(styles.style.height, styles.arrowStyle.height, blocks),
+					left: toBorderPosition(['topRight', 'bottomRight'])(styles.style.height, styles.arrowStyle.height, blocks)
+				};
+			}
+		}
+	}
+	function createBlock(type, style, blocks) {
+		/*
+			Функция создания конкретного типа блока для белки
+		*/
+		if (typeof BlockTypes[type] === 'undefined') {
+			/*
+				Для незаданного типа пораждаем исключение
+			*/
+			throw 'Trying to create block with undefined type in squirrelsGraphicFactory';
+		}
+		return $('<div class="block ' + (() => {
+			let classes = '';
+			/*
+				Формируем классы на основе прочих блоков данной белки (они отвечают
+					за то, какие бордеры данного блока будут отсутствовать)
+			*/
+			for (let otherBlock in BlockTypes[type].CSSclasses) {
+				if (blocks.indexOf(otherBlock) !== -1) {
+					classes += ' ' + BlockTypes[type].CSSclasses[otherBlock];
+				}
+			}
+			return classes;
+		})() + '"></div>').css(style).css(BlockTypes[type].position(style));
+	}
+	function createArrow(type, styles, blocks) {
+		/*
+			функция создания стрелки конкретного типа
+		*/
+		if (typeof arrowTypes[type] === 'undefined') {
+			throw 'Trying to crate arrow with undefined type in squirrelsGraphicFactory';
+		}
+		return $('<div class="arrow ' + arrowTypes[type].CSSclass + ' deactivate"></div>').css(styles.arrowStyle).css(arrowTypes[type].position(styles, blocks));
+	}
+	function createSquirrel(blocks, width, height, color) {
 		/*
 			Функция создания конкретного графического элемента белки на основе элементов блоков
 			её составляющий и стрелок с заданными стилями и положениями. Это простой сборщик
 		*/
+		const styles = stylesOfSquirrelsBlocks(width, height, color);
 		const parent = $('<div class="squirrel"></div>');
-		blocks.forEach(block => {
+		/*
+			Добавляем блоки и стрелки
+		*/
+		blocks.map(block => {
+			return createBlock(block, styles.style, blocks);
+		}).forEach(block => {
 			parent.append(block);
 		});
-		for (key in arrows) {
-			parent.append(arrows[key]);
-		}
+		[
+			createArrow('top', styles, blocks),
+			createArrow('bottom', styles, blocks),
+			createArrow('left', styles, blocks),
+			createArrow('right', styles, blocks)
+		].forEach(arrow => {
+			parent.append(arrow);
+		});
 		return parent;
 	}
+	
 	//типовые функции создания конкретных типов белок
-	this.line2height = function(width, height, color) {
-		const blocks = createBlocks([['withoutBottom'], ['withoutTop']], width, height, color);
-		blocks[1].css({
-			top: height + 'px'
-		});
-		const arrows = createArrows(width, height, color, {
-			top: {
-				left: width * 0.375 + 'px'
-			},
-			bottom: {
-				left: width * 0.375 + 'px',
-				top: (height * 1.75 - 3) + 'px'
-			},
-			left: {
-				top: height * 0.875 + 'px'
-			},
-			right: {
-				top: height * 0.875 + 'px',
-				left: 0.75 * height - 3 + 'px'
-			}
-		});
-		return createSquirrel(blocks, arrows);
+	this.line2height = (width, height, color) => {
+		return createSquirrel(['topLeft', 'bottomLeft'], width, height, color);
 	};
 	this.line2width = function(width, height, color) {
-		const blocks = createBlocks([['withoutRight'], ['withoutLeft']], width, height, color);
-		blocks[1].css({
-			left: width + 'px'
-		});
-		const arrows = createArrows(width, height, color, {
-			top: {
-				left: width * 0.875 + 'px'
-			},
-			bottom: {
-				left: width * 0.875 + 'px',
-				top: (height * 0.75 - 3) + 'px'
-			},
-			left: {
-				top: height * 0.375 + 'px'
-			},
-			right: {
-				top: height * 0.375 + 'px',
-				left: 1.75 * height - 3 + 'px'
-			}
-		});
-		return createSquirrel(blocks, arrows);
+		return createSquirrel(['topLeft', 'topRight'], width, height, color);
 	};
-	/*this.CounterclockwiseCorner = function(width, height, color) {
-		const blocks = createBlocks([['withoutBottom'], ['withoutTop', 'withoutRight'], ['withoutLeft']]);
-		blocks[1].css({
-			top: height + 'px'
-		});
-		blocks[2].css({
-			top: height + 'px',
-			left: width + 'px'
-		});
-		const arrows = createArrows({
-			top:{
-				left: width * 0.375 + 'px'
-			},
-			bottom:{
-				left: width * 0.875 + 'px',
-				top: (height * 1.75 - 3) + 'px'
-			},
-			left:{
-				top: height * 0.75 + 'px'
-			},
-			right:{
-				top: height * 1.375 + 'px',
-				left: 1.75 * height - 3 + 'px'
-			}
-		});
-		return createSquirrel(blocks, arrows);
+	this.topLeftCorner = function(width, height, color) {
+		return createSquirrel(['topRight', 'bottomLeft', 'bottomRight'], width, height, color);
 	};
-	this.ClockwiseCorner = function(width, height, color) {
-		parent.empty();
-		const blocks = createBlocks([['withoutRight'], ['withoutLeft', 'withoutBottom'], ['withoutTop']]);
-		blocks[1].css({
-			left: width + 'px'
-		});
-		blocks[2].css({
-			top: height + 'px',
-			left: width + 'px'
-		});
-		const arrows = createArrows({
-			top:{
-				left: width * 0.875 + 'px'
-			},
-			bottom:{
-				left: width * 1.375 + 'px',
-				top: (height * 1.75 - 3) + 'px'
-			},
-			left:{
-				top: height * 0.375 + 'px'
-			},
-			right:{
-				top: height * 0.875 + 'px',
-				left: 1.75 * height - 3 + 'px'
-			}
-		});
-		return createSquirrel(blocks, arrows);
-	};*/
+	this.topRightCorner = function(width, height, color) {
+		return createSquirrel(['topLeft', 'bottomLeft', 'bottomRight'], width, height, color);
+	};
+	this.bottomLeftCorner = function(width, height, color) {
+		return createSquirrel(['topLeft', 'topRight', 'bottomRight'], width, height, color);
+	};
+	this.bottomRightCorner = function(width, height, color) {
+		return createSquirrel(['topLeft', 'topRight', 'bottomLeft'], width, height, color);
+	};
 })();
