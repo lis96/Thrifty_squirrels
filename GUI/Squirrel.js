@@ -1,11 +1,14 @@
+'use strict';
+
 class SquirrelGUI {
 	constructor(wrapped, fieldGUI) {
 		this.wrapped = wrapped;						//обёртывающая декоратора
+		this.wrapped.setWrapper(this);				//регистрируем обёртку
 		this.field = fieldGUI;						//GUI поля
 		this.color = Settings.getFollowingColor();	//выдаём цвет
 		const coords = this.field.coordsOfTheGrid(this.wrapped.coords);		//выдаём координаты элемента на поле
 		//на фаборике создаём объект графического элемента белочки
-		this.jQ = squirrelsGraphicFactory[this.wrapped.type](coords.width, coords.height, this.color);
+		this.jQ = squirrelsGraphicFactory[this.wrapped.type](coords.width, coords.height, this.color, this.wrapped.getNut());
 		//добавляем элемент на поле
 		this.field.jQ.append(this.jQ);
 		//распологаем элемент на поле
@@ -31,6 +34,7 @@ class SquirrelGUI {
 			//чекаем возможность движения каждой из белок
 			this.field.checkAllSquirrelsPossibleDirections();
 		});
+		Logger.log(this.wrapped.field.toString());
 	}
 
 	checkPossibleDirectionOfMove() {
@@ -89,6 +93,19 @@ class SquirrelGUI {
 					removeMouseEvents(arrow);
 				}
 			}
+		});
+	}
+
+	hideNut() {
+		/*
+			Функция сокрытия орешка
+		*/
+		$('.circle', this.jQ).animate({
+			width: '0',
+			height: '0',
+			margin: '50%'
+		}, Settings.getAnimateSpeed(), () => {
+			$('.nut', this.jQ).addClass('deactivate');
 		});
 	}
 }

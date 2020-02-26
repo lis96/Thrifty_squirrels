@@ -68,3 +68,36 @@ body {
 	opacity: 0.4;
 	cursor: default;
 }
+
+.mink {
+	position: absolute;
+	z-index: 6;
+	pointer-events: none;
+}
+	.mink .circle {
+		background-color: black;
+		width: 50%;
+		height: 50%;
+		margin: 25%;
+		border-radius: 50%;
+		opacity: 0.4;
+	}
+	.mink.deactivate {
+		display: none;
+	}
+
+.squirrel .nut {
+	pointer-events: none;
+	position: absolute;
+	z-index: 5;
+}
+	.squirrel .nut.deactivate {
+		display: none;
+	}
+.squirrel .nut .circle {
+	background-color: #B70;
+	width: 40%;
+	height: 40%;
+	margin: 30%;
+	border-radius: 50%;
+}

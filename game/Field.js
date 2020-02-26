@@ -1,3 +1,5 @@
+'use strict';
+
 class Field {
 	_emptyField() {
 		/*
@@ -9,9 +11,10 @@ class Field {
 	}
 
 	constructor() {
-		this._squirrels = [];
-		this._height = this._width = 4;
-		this._field = [];
+		this._squirrels = [];				//массив белок
+		this._minks = [];					//массив норок
+		this._height = this._width = 4;		//размеры (дефолтно 4)
+		this._field = [];					//поле
 		this._emptyField();
 	}
 
@@ -42,6 +45,12 @@ class Field {
 				this._field[coords[0] * this._width + coords[1]] = 1;
 			});
 		});
+		this._minks.forEach(mink => {
+			const coords = mink.getCoords();
+			if (!mink.isFulled()) {
+				this._field[coords[0] * this._width + coords[1]] += 2;
+			}
+		});
 	}
 
 	setSquirrel(sq) {
@@ -71,6 +80,26 @@ class Field {
 		if (coords[0] < 0 || coords[0] >= this._height || coords[1] < 0 || coords[1] >= this._width) {
 			return false;
 		}
-		return (this._field[coords[0] * this._width + coords[1]] == 0);
+		return ((this._field[coords[0] * this._width + coords[1]] & 1) == 0);
+	}
+
+	setMink(mink) {
+		/*
+			Регистрируем норку на поле
+		*/
+		this._minks.push(mink);
+	}
+
+	tryingToHideNut(coords) {
+		/*
+			Попытка срятать орешек на coords в некоторую норку
+		*/
+		if ((this._field[coords[0] * this._width + coords[1]] & 2) == 0) return false;
+		for (let key in this._minks) {
+			if (this._minks[key].tryingToHideNut(coords)) {
+				break;
+			}
+		}
+		return true;
 	}
 }

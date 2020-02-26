@@ -186,14 +186,27 @@ const squirrelsGraphicFactory = new (function(){
 	}
 	function createArrow(type, styles, blocks) {
 		/*
-			функция создания стрелки конкретного типа
+			Функция создания стрелки конкретного типа
 		*/
 		if (typeof arrowTypes[type] === 'undefined') {
 			throw 'Trying to crate arrow with undefined type in squirrelsGraphicFactory';
 		}
 		return $('<div class="arrow ' + arrowTypes[type].CSSclass + ' deactivate"></div>').css(styles.arrowStyle).css(arrowTypes[type].position(styles, blocks));
 	}
-	function createSquirrel(blocks, width, height, color) {
+
+	function createNut(width, height, nut) {
+		/*
+			Функция создания графического элемента "орешка"
+		*/
+		return $('<div class="nut"><div class="circle"></div></div>').css({
+			width: width + 'px',
+			height: height + 'px',
+			left: nut[1] * width + 'px',
+			top: nut[0] * height + 'px'
+		});
+	}
+
+	function createSquirrel(blocks, width, height, color, nut) {
 		/*
 			Функция создания конкретного графического элемента белки на основе элементов блоков
 			её составляющий и стрелок с заданными стилями и положениями. Это простой сборщик
@@ -216,26 +229,27 @@ const squirrelsGraphicFactory = new (function(){
 		].forEach(arrow => {
 			parent.append(arrow);
 		});
+		parent.append(createNut(width, height, nut));
 		return parent;
 	}
 	
 	//типовые функции создания конкретных типов белок
-	this.line2height = (width, height, color) => {
-		return createSquirrel(['topLeft', 'bottomLeft'], width, height, color);
+	this.line2height = (width, height, color, nut) => {
+		return createSquirrel(['topLeft', 'bottomLeft'], width, height, color, nut);
 	};
-	this.line2width = function(width, height, color) {
-		return createSquirrel(['topLeft', 'topRight'], width, height, color);
+	this.line2width = function(width, height, color, nut) {
+		return createSquirrel(['topLeft', 'topRight'], width, height, color, nut);
 	};
-	this.topLeftCorner = function(width, height, color) {
-		return createSquirrel(['topRight', 'bottomLeft', 'bottomRight'], width, height, color);
+	this.topLeftCorner = function(width, height, color, nut) {
+		return createSquirrel(['topRight', 'bottomLeft', 'bottomRight'], width, height, color, nut);
 	};
-	this.topRightCorner = function(width, height, color) {
-		return createSquirrel(['topLeft', 'bottomLeft', 'bottomRight'], width, height, color);
+	this.topRightCorner = function(width, height, color, nut) {
+		return createSquirrel(['topLeft', 'bottomLeft', 'bottomRight'], width, height, color, nut);
 	};
-	this.bottomLeftCorner = function(width, height, color) {
-		return createSquirrel(['topLeft', 'topRight', 'bottomRight'], width, height, color);
+	this.bottomLeftCorner = function(width, height, color, nut) {
+		return createSquirrel(['topLeft', 'topRight', 'bottomRight'], width, height, color, nut);
 	};
-	this.bottomRightCorner = function(width, height, color) {
-		return createSquirrel(['topLeft', 'topRight', 'bottomLeft'], width, height, color);
+	this.bottomRightCorner = function(width, height, color, nut) {
+		return createSquirrel(['topLeft', 'topRight', 'bottomLeft'], width, height, color, nut);
 	};
 })();

@@ -1,7 +1,7 @@
-/*
-	Различные типы белок
-*/
 const squirrelsTypes = (function(){
+	/*
+		Различные типы белок
+	*/
 	class squirrelsType {
 		constructor(coordsOnGrid) {
 			this.coordsOnGrid = function(coords) {

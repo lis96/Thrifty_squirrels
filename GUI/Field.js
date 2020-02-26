@@ -28,6 +28,11 @@ class FieldGUI {
 		this.wrapped._squirrels.forEach(sq => {
 			this._squirrels.push(new SquirrelGUI(sq, this));
 		});
+		this._minks = [];				//массив графических элементов норок
+		//размещаем норки в поле
+		this.wrapped._minks.forEach(mink => {
+			this._minks.push(new MinkGUI(mink, this));
+		});
 	}
 
 	coordsOfTheGrid(coords) {
