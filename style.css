@@ -6,7 +6,30 @@ body {
 		background-color: #DDD;
 		margin: auto;
 		width: 100%;
+		display: grid;
+		grid-template-columns: 300px auto;
 	}
+
+.menu {
+	background-color: #CFC; 
+	height: 100%;
+	border: 3px solid #040;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+}
+.menu .option {
+	display: flex;
+	justify-content: center;
+	cursor: pointer;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+.menu .option.hovering {
+	background-color: #FFA;
+}
 
 .field {
 	width: 600px;

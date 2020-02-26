@@ -6,13 +6,13 @@ const Settings = new (function(obj) {
 	let animateSpeed = obj.animateSpeed;	//скорость анимации
 	let colorList = obj.colorList;			//список цветов белок
 	let colorUsed = 0;						//сколько цветов белкам уже выдано
-	this.getAnimateSpeed = function() {
+	this.getAnimateSpeed = () => {
 		/*
 			Защищённый доступ к скорости анимации
 		*/
 		return animateSpeed;
-	}
-	this.setAnimateSpeed = function(val) {
+	};
+	this.setAnimateSpeed = val => {
 		/*
 			Задаём скорость анимации
 		*/
@@ -21,24 +21,27 @@ const Settings = new (function(obj) {
 			throw 'Trying to set wrong Settings:animateSpeed';
 		}
 		animateSpeed = val;
-	}
-	this.getColorListElement = function(ind) {
+	};
+	this.getColorListElement = ind => {
 		/*
 			ind элемент списка цветов, защищённый доступ
 		*/
 		return colorList[ind].slice();
-	}
-	this.setColorListElement = function(ind, color) {
+	};
+	this.setColorListElement = (ind, color) => {
 		/*
 			Задаём ind элемент списка цветов
 		*/
 		colorList[ind] = color.slice();
-	}
-	this.getFollowingColor = function() {
+	};
+	this.getFollowingColor = () => {
 		/*
 			Выдаём следующий цвет
 		*/
 		return this.getColorListElement(colorUsed++);
+	};
+	this.resetColor = () => {
+		colorUsed = 0;
 	}
 })({
 	animateSpeed: 400,
