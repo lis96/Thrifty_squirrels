@@ -33,6 +33,10 @@ class FieldGUI {
 		this.wrapped._minks.forEach(mink => {
 			this._minks.push(new MinkGUI(mink, this));
 		});
+		this._islands = [];
+		this.wrapped._islands.forEach(island => {
+			this._islands.push(new IslandGUI(island, this));
+		});
 	}
 
 	coordsOfTheGrid(coords) {

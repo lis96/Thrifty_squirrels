@@ -14,6 +14,9 @@ class MinkGUI {
 		//jQuery элемент
 		this.jQ = $('<div class="mink"><div class="circle"></div></div>').css(this.field.coordsOfTheGrid(this.wrapped.getCoords()));
 		this.field.jQ.append(this.jQ);	//Добавляем элемент на поле
+		if (this.wrapped.isFulled()) {
+			this.jQ.addClass('deactivate');
+		}
 	}
 	hideNut() {
 		/*

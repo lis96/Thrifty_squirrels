@@ -38,15 +38,12 @@ body {
 	border: 2px solid #000;
 	position: relative;
 }
-	.field .cell, .field .squirrel, .field .squirrel>.block {
+	.field .cell, .field .squirrel, .field .squirrel>.block, .field .island {
 		position: absolute;
 		box-sizing: border-box;
 	}
 	.field .cell {
 		border: 1px solid #666;
-	}
-	.field .squirrel {
-		background-color: yellow;
 	}
 	.field .squirrel>.block {
 		z-index: 3;

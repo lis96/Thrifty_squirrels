@@ -21,6 +21,7 @@ const PositionGetter = new (function(){
 			new Mink([1, 1], field);
 			new Mink([2, 3], field);
 			new Mink([3, 0], field);
+			new Island([2, 3], field);
 			new Squirrel([0, 0], field, 'line2height', [0, 0]);
 			new Squirrel([0, 2], field, 'bottomLeftCorner', [1, 1]);
 

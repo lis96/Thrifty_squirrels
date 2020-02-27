@@ -12,6 +12,7 @@ class Field {
 
 	constructor() {
 		this._squirrels = [];				//массив белок
+		this._islands = [];
 		this._minks = [];					//массив норок
 		this._height = this._width = 4;		//размеры (дефолтно 4)
 		this._field = [];					//поле
@@ -37,6 +38,10 @@ class Field {
 			Производим переграссчёт таблицы поля в соответствии с положением белок на поле
 		*/
 		this._emptyField();
+		this._islands.forEach(island => {
+			const coords = island.getCoords();
+			this._field[coords[0] * this._width + coords[1]] = 1;
+		});
 		this._squirrels.forEach(sq => {
 			sq.getCoordsList().forEach(coords => {
 				if (this._field[coords[0] * this._width + coords[1]]) {
@@ -59,6 +64,20 @@ class Field {
 		*/
 		this._squirrels.push(sq);
 		this.resolveSquirrelsSpace();
+	}
+
+	setIsland(island) {
+		/*
+			Функция добавления островка на поле
+		*/
+		this._islands.push(island);
+		const islandCoords = island.getCoords();
+		this._minks.forEach(mink => {
+			const coords = mink.getCoords();
+			if (coords[0] === islandCoords[0] && coords[1] == islandCoords[1]) {
+				mink.hideNut();
+			}
+		});
 	}
 
 	toString() {
